@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build (raylib static, w64devkit)",
+      "type": "shell",
+      "command": "C:/raylib/w64devkit/bin/g++.exe",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": { "Path": "C:\\raylib\\w64devkit\\bin;${env:Path}" }
+      },
+      "args": [
+        "main.cpp",
+        "-o", "main.exe",
+        "-IC:/raylib/raylib/src",
+        "-LC:/raylib/raylib/src",
+        "-lraylib", "-lopengl32", "-lgdi32", "-lwinmm",
+        "-static",
+        "-m64",
+        "-B", "C:/raylib/w64devkit/bin",
+        "-v"
+      ],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}
