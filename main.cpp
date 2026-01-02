@@ -737,7 +737,7 @@ bool checkPrerequisitesWithStack(int studentID, const Course &course, bool verbo
             return false;
         }
 
-        Course *pc = searchCourseByID(needed);
+        Course *pc = searchCourseByID(needed); // if a prerequisite course has prerequisites itself
         if (pc)
         {
             for (int j = 0; j < pc->prereqCount; ++j)
@@ -798,9 +798,9 @@ bool enqueueWaitlist(int studentID, int courseID)
         cout << "Course doesn't exist.\n";
         return false;
     }
-    for (int i = 0; i < qCount; i++)
+    for (int i = 0; i < qCount; i++) //check if student is already waitlisted
     {
-        int idx = (frontIdx + i) % MAX_Q;
+        int idx = (frontIdx + i) % MAX_Q; //circular indexing
         if (waitlistQ[idx].studentID == studentID &&
             waitlistQ[idx].courseID == courseID)
         {
@@ -1410,15 +1410,15 @@ int consoleMain()
     return 0;
 }
 
-static const Color UI_BG = {15, 23, 42, 255};
-static const Color UI_PANEL = {30, 41, 59, 255};
-static const Color UI_ACCENT = {59, 130, 246, 255};
-static const Color UI_ACCENT_D = {37, 99, 235, 255};
-static const Color UI_TEXT = {241, 245, 249, 255};
-static const Color UI_MUTED = {148, 163, 184, 255};
-static const Color UI_SHADOW = {0, 0, 0, 120};
-static const Color UI_SUCCESS = {34, 197, 94, 255};
-static const Color UI_CARD = {51, 65, 85, 255};
+static const Color UI_BG = {15, 23, 42, 255};        // dark blue background
+static const Color UI_PANEL = {30, 41, 59, 255};     // panels aur menus kay leyayy
+static const Color UI_ACCENT = {59, 130, 246, 255};  // buttons etc
+static const Color UI_ACCENT_D = {37, 99, 235, 255}; // for when you hover on buttons
+static const Color UI_TEXT = {241, 245, 249, 255};   // text color
+static const Color UI_MUTED = {148, 163, 184, 255};  // for labels and less important element
+static const Color UI_SHADOW = {0, 0, 0, 120};       // button shadows and card shadows
+static const Color UI_SUCCESS = {34, 197, 94, 255};  // toast message color
+static const Color UI_CARD = {51, 65, 85, 255};      // the card backgronds
 
 static float UiScale()
 {
@@ -1444,13 +1444,13 @@ static int ScaleY(int baseY)
     return (int)(baseY * (sh / 820.0f));
 }
 
-static int ScaleSize(int baseSize)
+static int ScaleSize(int baseSize) // for button sizes
 {
     float s = UiScale();
     return (int)(baseSize * s);
 }
 
-static Rectangle ScaleRect(float baseX, float baseY, float baseW, float baseH)
+static Rectangle ScaleRect(float baseX, float baseY, float baseW, float baseH) // Make rectangle fit correctly on whatever screen size we have
 {
     float sw = (float)GetScreenWidth();
     float sh = (float)GetScreenHeight();
@@ -1461,7 +1461,7 @@ static Rectangle ScaleRect(float baseX, float baseY, float baseW, float baseH)
         baseH * (sh / 820.0f)};
 }
 
-static Rectangle GetContentArea(int baseWidth)
+static Rectangle GetContentArea(int baseWidth) // to keep everything centered
 {
     int sw = GetScreenWidth();
     int contentWidth = ScaleX(baseWidth);
@@ -1485,12 +1485,11 @@ static void DrawUIText(const char *txt, int x, int y, int px, Color col, bool it
     }
 
     const Font &f = italic ? gUIFontItalic : gUIFont;
-    Vector2 pos = { (float)x, (float)y };
+    Vector2 pos = {(float)x, (float)y};
     DrawTextEx(f, txt, pos, size, spacing, col);
 }
 
-
-static int MeasureUIText(const char *txt, int px, bool italic = false, float spacing = 1.0f)
+static int MeasureUIText(const char *txt, int px, bool italic = false, float spacing = 1.0f) // center and align text inside buttons
 {
     float s = UiScale();
     float size = px * s;
@@ -1568,14 +1567,14 @@ static void DrawTextBox(TextBox &tb, const char *placeholder = "")
     }
 
     Rectangle sr = {tb.r.x + 1, tb.r.y + 2, tb.r.width, tb.r.height};
-    DrawRectangleRounded(sr, 0.2f, 6, Color{0, 0, 0, 80});
+    DrawRectangleRounded(sr, 0.2f, 6, Color{0, 0, 0, 80}); // shadow of textbox
     Color bg = tb.focused ? Color{51, 65, 85, 255} : Color{30, 41, 59, 255};
-    DrawRectangleRounded(tb.r, 0.2f, 6, bg);
+    DrawRectangleRounded(tb.r, 0.2f, 6, bg); // main box
 
     Color border = tb.focused ? UI_ACCENT : Color{71, 85, 105, 255};
-    DrawRectangleRoundedLines(tb.r, 0.2f, 6, tb.focused ? 2 : 1, border);
+    DrawRectangleRoundedLines(tb.r, 0.2f, 6, tb.focused ? 2 : 1, border); // border
 
-    if (tb.focused)
+    if (tb.focused) // agar focused state mai hoo toh keyboard kay input read kro
     {
         int key = GetCharPressed();
         while (key > 0)
@@ -1607,7 +1606,7 @@ static void DrawTextBox(TextBox &tb, const char *placeholder = "")
     const int xpad = ScaleSize(14);
     const int ypad = ScaleSize(10);
 
-    if (empty)
+    if (empty) // agar text box empty hoo toh placeholder text draw kro
     {
         DrawText(show, (int)tb.r.x + xpad, (int)tb.r.y + ypad, px, UI_MUTED);
     }
@@ -1616,7 +1615,7 @@ static void DrawTextBox(TextBox &tb, const char *placeholder = "")
         DrawText(show, (int)tb.r.x + xpad, (int)tb.r.y + ypad, px, UI_TEXT);
     }
 
-    if (tb.focused)
+    if (tb.focused) // cursor kay leyayy
     {
         static float caretTimer = 0.0f;
         caretTimer += GetFrameTime();
@@ -1630,7 +1629,7 @@ static void DrawTextBox(TextBox &tb, const char *placeholder = "")
     }
 }
 
-static int toInt(const string &s)
+static int toInt(const string &s) // convert string to int
 {
     if (s.empty())
         return 0;
@@ -1654,7 +1653,7 @@ static void ShowToast(const string &s)
     toastTimer = 2.0f;
 }
 
-static void DrawTopBar()
+static void DrawTopBar() // header bar
 {
     int sw = GetScreenWidth();
     int barHeight = ScaleY(80);
@@ -1714,7 +1713,7 @@ static void ScreenStudents()
     DrawTopBar();
 
     Rectangle content = GetContentArea(900);
-    int startX       = (int)content.x;
+    int startX = (int)content.x;
     int contentWidth = (int)content.width;
 
     DrawText("Student Management",
@@ -1732,56 +1731,49 @@ static void ScreenStudents()
         (float)startX,
         (float)ScaleY(150),
         (float)contentWidth,
-        (float)ScaleY(160)
-    };
+        (float)ScaleY(160)};
     DrawRectangleRounded(card, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(card, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
     static TextBox id, name, email, phone, addr, pass;
 
-    id.numericOnly  = true;
-    id.maxLen       = 16;
+    id.numericOnly = true;
+    id.maxLen = 16;
     id.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(170),
         (float)ScaleX(140),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     name.r = {
         (float)(startX + ScaleX(170)),
         (float)ScaleY(170),
         (float)ScaleX(200),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     email.r = {
         (float)(startX + ScaleX(380)),
         (float)ScaleY(170),
         (float)ScaleX(200),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     phone.r = {
         (float)(startX + ScaleX(590)),
         (float)ScaleY(170),
         (float)ScaleX(140),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     addr.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(228),
         (float)ScaleX(350),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     pass.r = {
         (float)(startX + ScaleX(380)),
         (float)ScaleY(228),
         (float)ScaleX(200),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     int labelSize = ScaleSize(14);
 
@@ -1828,14 +1820,11 @@ static void ScreenStudents()
     DrawTextBox(pass, "********");
 
     Button addBtn = {
-        {
-            (float)(startX + ScaleX(750)),
-            (float)ScaleY(228),
-            (float)ScaleX(130),
-            (float)ScaleY(38)
-        },
-        "Add Student"
-    };
+        {(float)(startX + ScaleX(750)),
+         (float)ScaleY(228),
+         (float)ScaleX(130),
+         (float)ScaleY(38)},
+        "Add Student"};
 
     if (DrawButton(addBtn))
     {
@@ -1860,20 +1849,18 @@ static void ScreenStudents()
         (float)startX,
         (float)ScaleY(330),
         (float)contentWidth,
-        (float)ScaleY(80)
-    };
+        (float)ScaleY(80)};
     DrawRectangleRounded(actCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(actCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
     static TextBox searchId;
     searchId.numericOnly = true;
-    searchId.maxLen      = 16;
+    searchId.maxLen = 16;
     searchId.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(350),
         (float)ScaleX(140),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     DrawText("Quick Actions",
              startX + ScaleX(20),
@@ -1883,37 +1870,28 @@ static void ScreenStudents()
     DrawTextBox(searchId, "Student ID");
 
     Button searchBtn = {
-        {
-            (float)(startX + ScaleX(170)),
-            (float)ScaleY(350),
-            (float)ScaleX(110),
-            (float)ScaleY(38)
-        },
+        {(float)(startX + ScaleX(170)),
+         (float)ScaleY(350),
+         (float)ScaleX(110),
+         (float)ScaleY(38)},
         "Search",
-        false
-    };
+        false};
 
     Button deleteBtn = {
-        {
-            (float)(startX + ScaleX(290)),
-            (float)ScaleY(350),
-            (float)ScaleX(110),
-            (float)ScaleY(38)
-        },
+        {(float)(startX + ScaleX(290)),
+         (float)ScaleY(350),
+         (float)ScaleX(110),
+         (float)ScaleY(38)},
         "Delete",
-        false
-    };
+        false};
 
     Button sortBtn = {
-        {
-            (float)(startX + ScaleX(410)),
-            (float)ScaleY(350),
-            (float)ScaleX(140),
-            (float)ScaleY(38)
-        },
+        {(float)(startX + ScaleX(410)),
+         (float)ScaleY(350),
+         (float)ScaleX(140),
+         (float)ScaleY(38)},
         "Sort by ID",
-        false
-    };
+        false};
 
     if (DrawButton(searchBtn))
     {
@@ -1943,8 +1921,7 @@ static void ScreenStudents()
         (float)startX,
         (float)ScaleY(430),
         (float)contentWidth,
-        (float)ScaleY(360)
-    };
+        (float)ScaleY(360)};
     DrawRectangleRounded(tableCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(tableCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -1954,7 +1931,7 @@ static void ScreenStudents()
              ScaleSize(18),
              UI_TEXT);
 
-    int tblY      = ScaleY(475);
+    int tblY = ScaleY(475);
     int rowHeight = ScaleY(30);
 
     DrawRectangle(startX + ScaleX(20),
@@ -1964,8 +1941,8 @@ static void ScreenStudents()
                   Color{51, 65, 85, 255});
 
     int headerSize = ScaleSize(15);
-    DrawText("ID",    startX + ScaleX(30),  tblY + ScaleY(8), headerSize, UI_MUTED);
-    DrawText("Name",  startX + ScaleX(100), tblY + ScaleY(8), headerSize, UI_MUTED);
+    DrawText("ID", startX + ScaleX(30), tblY + ScaleY(8), headerSize, UI_MUTED);
+    DrawText("Name", startX + ScaleX(100), tblY + ScaleY(8), headerSize, UI_MUTED);
     DrawText("Email", startX + ScaleX(350), tblY + ScaleY(8), headerSize, UI_MUTED);
     DrawText("Phone", startX + ScaleX(620), tblY + ScaleY(8), headerSize, UI_MUTED);
 
@@ -1973,7 +1950,7 @@ static void ScreenStudents()
     int row = 0;
     StudentNode *cur = gStudentHead;
     int dataRowHeight = ScaleY(28);
-    int dataSize      = ScaleSize(15);
+    int dataSize = ScaleSize(15);
 
     while (cur && row < 9)
     {
@@ -2004,7 +1981,7 @@ static void ScreenCourses()
     DrawTopBar();
 
     Rectangle content = GetContentArea(900);
-    int startX       = (int)content.x;
+    int startX = (int)content.x;
     int contentWidth = (int)content.width;
 
     DrawText("Course Management",
@@ -2022,54 +1999,48 @@ static void ScreenCourses()
         (float)startX,
         (float)ScaleY(150),
         (float)contentWidth,
-        (float)ScaleY(110)
-    };
+        (float)ScaleY(110)};
     DrawRectangleRounded(card, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(card, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
     static TextBox cid, cname, ccred, ccap, cinst;
     int labelSize = ScaleSize(14);
 
-    cid.numericOnly  = true;
-    cid.maxLen       = 16;
+    cid.numericOnly = true;
+    cid.maxLen = 16;
     cid.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(170),
         (float)ScaleX(120),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     cname.r = {
         (float)(startX + ScaleX(150)),
         (float)ScaleY(170),
         (float)ScaleX(240),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     ccred.numericOnly = true;
-    ccred.maxLen      = 3;
+    ccred.maxLen = 3;
     ccred.r = {
         (float)(startX + ScaleX(400)),
         (float)ScaleY(170),
         (float)ScaleX(90),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     ccap.numericOnly = true;
-    ccap.maxLen      = 4;
+    ccap.maxLen = 4;
     ccap.r = {
         (float)(startX + ScaleX(500)),
         (float)ScaleY(170),
         (float)ScaleX(90),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     cinst.r = {
         (float)(startX + ScaleX(600)),
         (float)ScaleY(170),
         (float)ScaleX(190),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     DrawText("ID",
              startX + ScaleX(20),
@@ -2107,14 +2078,11 @@ static void ScreenCourses()
     DrawTextBox(cinst, "Prof. Khan");
 
     Button addBtn = {
-        {
-            (float)(startX + ScaleX(20)),
-            (float)ScaleY(212),
-            (float)ScaleX(130),
-            (float)ScaleY(38)
-        },
-        "Add Course"
-    };
+        {(float)(startX + ScaleX(20)),
+         (float)ScaleY(212),
+         (float)ScaleX(130),
+         (float)ScaleY(38)},
+        "Add Course"};
 
     if (DrawButton(addBtn))
     {
@@ -2125,13 +2093,13 @@ static void ScreenCourses()
         else
         {
             Course c;
-            c.courseID        = toInt(cid.text);
-            c.courseName      = cname.text;
-            c.courseCredits   = toInt(ccred.text);
+            c.courseID = toInt(cid.text);
+            c.courseName = cname.text;
+            c.courseCredits = toInt(ccred.text);
             c.courseInstructor = cinst.text;
 
-            int cap        = toInt(ccap.text);
-            c.maxCapacity  = (cap < 0) ? 0 : cap;
+            int cap = toInt(ccap.text);
+            c.maxCapacity = (cap < 0) ? 0 : cap;
             c.currentEnrolled = 0;
 
             insertCourseBST(c);
@@ -2150,20 +2118,18 @@ static void ScreenCourses()
         (float)startX,
         (float)ScaleY(270),
         (float)contentWidth,
-        (float)ScaleY(80)
-    };
+        (float)ScaleY(80)};
     DrawRectangleRounded(actCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(actCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
     static TextBox scid;
     scid.numericOnly = true;
-    scid.maxLen      = 16;
+    scid.maxLen = 16;
     scid.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(290),
         (float)ScaleX(140),
-        (float)ScaleY(38)
-    };
+        (float)ScaleY(38)};
 
     DrawText("Quick Actions",
              startX + ScaleX(20),
@@ -2173,25 +2139,19 @@ static void ScreenCourses()
     DrawTextBox(scid, "Course ID");
 
     Button searchBtn = {
-        {
-            (float)(startX + ScaleX(170)),
-            (float)ScaleY(290),
-            (float)ScaleX(110),
-            (float)ScaleY(38)
-        },
+        {(float)(startX + ScaleX(170)),
+         (float)ScaleY(290),
+         (float)ScaleX(110),
+         (float)ScaleY(38)},
         "Search",
-        false
-    };
+        false};
     Button dropBtn = {
-        {
-            (float)(startX + ScaleX(290)),
-            (float)ScaleY(290),
-            (float)ScaleX(110),
-            (float)ScaleY(38)
-        },
+        {(float)(startX + ScaleX(290)),
+         (float)ScaleY(290),
+         (float)ScaleX(110),
+         (float)ScaleY(38)},
         "Drop",
-        false
-    };
+        false};
 
     if (DrawButton(searchBtn))
     {
@@ -2211,8 +2171,7 @@ static void ScreenCourses()
         (float)startX,
         (float)ScaleY(360),
         (float)contentWidth,
-        (float)ScaleY(90)
-    };
+        (float)ScaleY(90)};
     DrawRectangleRounded(prereqCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(prereqCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -2224,22 +2183,20 @@ static void ScreenCourses()
 
     static TextBox pcid, ppID;
     pcid.numericOnly = true;
-    pcid.maxLen      = 16;
+    pcid.maxLen = 16;
     ppID.numericOnly = true;
-    ppID.maxLen      = 16;
+    ppID.maxLen = 16;
 
     pcid.r = {
         (float)(startX + ScaleX(20)),
         (float)ScaleY(410),
         (float)ScaleX(140),
-        (float)ScaleY(32)
-    };
+        (float)ScaleY(32)};
     ppID.r = {
         (float)(startX + ScaleX(170)),
         (float)ScaleY(410),
         (float)ScaleX(140),
-        (float)ScaleY(32)
-    };
+        (float)ScaleY(32)};
 
     DrawText("Course ID",
              startX + ScaleX(20),
@@ -2255,15 +2212,12 @@ static void ScreenCourses()
     DrawTextBox(ppID, "101");
 
     Button addPreBtn = {
-        {
-            (float)(startX + ScaleX(330)),
-            (float)ScaleY(410),
-            (float)ScaleX(200),
-            (float)ScaleY(32)
-        },
+        {(float)(startX + ScaleX(330)),
+         (float)ScaleY(410),
+         (float)ScaleX(200),
+         (float)ScaleY(32)},
         "Add Prerequisite",
-        false
-    };
+        false};
     if (DrawButton(addPreBtn))
     {
         int courseID = toInt(pcid.text);
@@ -2320,8 +2274,7 @@ static void ScreenCourses()
         (float)startX,
         (float)ScaleY(470),
         (float)contentWidth,
-        (float)ScaleY(400)
-    };
+        (float)ScaleY(400)};
     DrawRectangleRounded(cardsCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(cardsCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -2341,8 +2294,7 @@ static void ScreenCourses()
     Color legendColors[] = {
         Color{34, 197, 94, 255},
         Color{59, 130, 246, 255},
-        Color{168, 85, 247, 255}
-    };
+        Color{168, 85, 247, 255}};
     for (int i = 0; i < 3; i++)
     {
         int lx = startX + ScaleX(150 + i * 130);
@@ -2354,13 +2306,13 @@ static void ScreenCourses()
                  UI_MUTED);
     }
 
-    int baseCardY  = ScaleY(545);
-    int cardW      = ScaleX(250);
-    int cardH      = ScaleY(120);
+    int baseCardY = ScaleY(545);
+    int cardW = ScaleX(250);
+    int cardH = ScaleY(120);
     int colsPerRow = 3;
-    int cardGap    = ScaleX(15);
+    int cardGap = ScaleX(15);
 
-    vector<CourseNode*> stack;
+    vector<CourseNode *> stack;
     CourseNode *n = gCourseRoot;
     int shown = 0;
 
@@ -2386,8 +2338,7 @@ static void ScreenCourses()
             (float)cardX,
             (float)cardY,
             (float)cardW,
-            (float)cardH
-        };
+            (float)cardH};
         DrawRectangleRounded(courseCard, 0.08f, 8, UI_CARD);
 
         DrawRectangle(cardX, cardY, ScaleX(5), cardH, cardColor);
@@ -2461,7 +2412,7 @@ static void ScreenEnroll()
     DrawTopBar();
 
     Rectangle content = GetContentArea(720);
-    int startX       = (int)content.x;
+    int startX = (int)content.x;
     int contentWidth = (int)content.width;
 
     DrawText("Enrollment Management",
@@ -2472,8 +2423,7 @@ static void ScreenEnroll()
         (float)startX,
         (float)ScaleY(160),
         (float)contentWidth,
-        (float)ScaleY(150)
-    };
+        (float)ScaleY(150)};
     DrawRectangleRounded(card, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(card, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -2481,13 +2431,15 @@ static void ScreenEnroll()
              startX + ScaleX(20), ScaleY(175), ScaleSize(20), UI_TEXT);
 
     static TextBox sid, cid;
-    sid.numericOnly = true; sid.maxLen = 16;
-    cid.numericOnly = true; cid.maxLen = 16;
+    sid.numericOnly = true;
+    sid.maxLen = 16;
+    cid.numericOnly = true;
+    cid.maxLen = 16;
 
-    sid.r = { (float)(startX + ScaleX(20)),  (float)ScaleY(235),
-              (float)ScaleX(200),            (float)ScaleY(40) };
-    cid.r = { (float)(startX + ScaleX(230)), (float)ScaleY(235),
-              (float)ScaleX(200),            (float)ScaleY(40) };
+    sid.r = {(float)(startX + ScaleX(20)), (float)ScaleY(235),
+             (float)ScaleX(200), (float)ScaleY(40)};
+    cid.r = {(float)(startX + ScaleX(230)), (float)ScaleY(235),
+             (float)ScaleX(200), (float)ScaleY(40)};
 
     DrawText("Student ID", startX + ScaleX(20), ScaleY(210),
              ScaleSize(16), UI_MUTED);
@@ -2498,21 +2450,29 @@ static void ScreenEnroll()
     DrawTextBox(cid, "501");
 
     Button enrollBtn = {
-        { (float)(startX + ScaleX(450)), (float)ScaleY(235),
-          (float)ScaleX(140),            (float)ScaleY(38) },
-        "Enroll"
-    };
+        {(float)(startX + ScaleX(450)), (float)ScaleY(235),
+         (float)ScaleX(140), (float)ScaleY(38)},
+        "Enroll"};
 
     if (DrawButton(enrollBtn))
     {
         int s = toInt(sid.text);
         int c = toInt(cid.text);
 
+        Student *studentPtr = searchStudentByID(s);
         Course *coursePtr = searchCourseByID(c);
 
-        if (!coursePtr)
+        if (!studentPtr)
+        {
+            ShowToast("Student not found");
+        }
+        else if (!coursePtr)
         {
             ShowToast("Course not found");
+        }
+        else if (!meetsPrerequisites(s, *coursePtr))
+        {
+            ShowToast("Prerequisites not met");
         }
         else if (coursePtr->maxCapacity > 0 &&
                  coursePtr->currentEnrolled >= coursePtr->maxCapacity)
@@ -2534,8 +2494,7 @@ static void ScreenEnroll()
         (float)startX,
         (float)ScaleY(330),
         (float)contentWidth,
-        (float)ScaleY(160)
-    };
+        (float)ScaleY(160)};
     DrawRectangleRounded(viewCard, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(viewCard, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -2544,10 +2503,11 @@ static void ScreenEnroll()
              ScaleSize(20), UI_TEXT);
 
     static TextBox vsid;
-    vsid.numericOnly = true; vsid.maxLen = 16;
+    vsid.numericOnly = true;
+    vsid.maxLen = 16;
 
-    vsid.r = { (float)(startX + ScaleX(20)), (float)ScaleY(390),
-               (float)ScaleX(180),           (float)ScaleY(38) };
+    vsid.r = {(float)(startX + ScaleX(20)), (float)ScaleY(390),
+              (float)ScaleX(180), (float)ScaleY(38)};
 
     DrawText("Student ID (for history)",
              startX + ScaleX(20), ScaleY(368),
@@ -2555,10 +2515,10 @@ static void ScreenEnroll()
     DrawTextBox(vsid, "1001");
 
     Button viewBtn = {
-        { (float)(startX + ScaleX(210)), (float)ScaleY(388),
-          (float)ScaleX(180),            (float)ScaleY(38) },
-        "View (Console)", false
-    };
+        {(float)(startX + ScaleX(210)), (float)ScaleY(388),
+         (float)ScaleX(180), (float)ScaleY(38)},
+        "View (Console)",
+        false};
 
     if (DrawButton(viewBtn))
     {
@@ -2568,13 +2528,15 @@ static void ScreenEnroll()
     }
 
     static TextBox dsid, dcid;
-    dsid.numericOnly = true; dsid.maxLen = 16;
-    dcid.numericOnly = true; dcid.maxLen = 16;
+    dsid.numericOnly = true;
+    dsid.maxLen = 16;
+    dcid.numericOnly = true;
+    dcid.maxLen = 16;
 
-    dsid.r = { (float)(startX + ScaleX(20)),  (float)ScaleY(450),
-               (float)ScaleX(180),            (float)ScaleY(38) };
-    dcid.r = { (float)(startX + ScaleX(210)), (float)ScaleY(450),
-               (float)ScaleX(180),            (float)ScaleY(38) };
+    dsid.r = {(float)(startX + ScaleX(20)), (float)ScaleY(450),
+              (float)ScaleX(180), (float)ScaleY(38)};
+    dcid.r = {(float)(startX + ScaleX(210)), (float)ScaleY(450),
+              (float)ScaleX(180), (float)ScaleY(38)};
 
     DrawText("Drop: Student ID",
              startX + ScaleX(20), ScaleY(432),
@@ -2587,10 +2549,9 @@ static void ScreenEnroll()
     DrawTextBox(dcid, "501");
 
     Button dropBtn = {
-        { (float)(startX + ScaleX(400)), (float)ScaleY(450),
-          (float)ScaleX(140),            (float)ScaleY(38) },
-        "Drop"
-    };
+        {(float)(startX + ScaleX(400)), (float)ScaleY(450),
+         (float)ScaleX(140), (float)ScaleY(38)},
+        "Drop"};
 
     if (DrawButton(dropBtn))
     {
@@ -2604,8 +2565,7 @@ static void ScreenEnroll()
         (float)startX,
         (float)ScaleY(500),
         (float)contentWidth,
-        (float)ScaleY(110)
-    };
+        (float)ScaleY(110)};
     DrawRectangleRounded(infoBox, 0.02f, 8, Color{59, 130, 246, 30});
     DrawRectangleRoundedLines(infoBox, 0.02f, 8, 1.0f, Color{59, 150, 246, 100});
 
@@ -2627,7 +2587,7 @@ static void ScreenPrereq()
     DrawTopBar();
 
     Rectangle content = GetContentArea(640);
-    int startX       = (int)content.x;
+    int startX = (int)content.x;
     int contentWidth = (int)content.width;
 
     DrawText("Prerequisite Validation",
@@ -2639,8 +2599,7 @@ static void ScreenPrereq()
         (float)startX,
         (float)ScaleY(160),
         (float)contentWidth,
-        (float)ScaleY(140)
-    };
+        (float)ScaleY(140)};
     DrawRectangleRounded(card, 0.02f, 8, UI_CARD);
     DrawRectangleRoundedLines(card, 0.02f, 8, 1.0f, Color{71, 85, 105, 255});
 
@@ -2651,13 +2610,15 @@ static void ScreenPrereq()
              UI_TEXT);
 
     static TextBox cid, sid;
-    cid.numericOnly = true; cid.maxLen = 16;
-    sid.numericOnly = true; sid.maxLen = 16;
+    cid.numericOnly = true;
+    cid.maxLen = 16;
+    sid.numericOnly = true;
+    sid.maxLen = 16;
 
-    cid.r = { (float)(startX + ScaleX(20)),  (float)ScaleY(225),
-              (float)ScaleX(180),            (float)ScaleY(38) };
-    sid.r = { (float)(startX + ScaleX(210)), (float)ScaleY(225),
-              (float)ScaleX(180),            (float)ScaleY(38) };
+    cid.r = {(float)(startX + ScaleX(20)), (float)ScaleY(225),
+             (float)ScaleX(180), (float)ScaleY(38)};
+    sid.r = {(float)(startX + ScaleX(210)), (float)ScaleY(225),
+             (float)ScaleX(180), (float)ScaleY(38)};
 
     DrawText("Course ID",
              startX + ScaleX(20),
@@ -2674,10 +2635,9 @@ static void ScreenPrereq()
     DrawTextBox(sid, "1001");
 
     Button validateBtn = {
-        { (float)(startX + ScaleX(410)), (float)ScaleY(225),
-          (float)ScaleX(170),            (float)ScaleY(38) },
-        "Validate"
-    };
+        {(float)(startX + ScaleX(410)), (float)ScaleY(225),
+         (float)ScaleX(170), (float)ScaleY(38)},
+        "Validate"};
 
     if (DrawButton(validateBtn))
     {
@@ -2691,8 +2651,7 @@ static void ScreenPrereq()
         (float)startX,
         (float)ScaleY(320),
         (float)contentWidth,
-        (float)ScaleY(70)
-    };
+        (float)ScaleY(70)};
     DrawRectangleRounded(infoBox, 0.02f, 8, Color{59, 130, 246, 30});
     DrawRectangleRoundedLines(infoBox, 0.02f, 8, 1.0f, Color{59, 130, 246, 100});
 
